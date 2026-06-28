@@ -72,4 +72,4 @@ Most tools that do "GitHub → career insights" require you to install something
 
 ## Credits
 
-Developed by **Reehan MP**.
+Developed by ❤️ **Reehan MP**.
