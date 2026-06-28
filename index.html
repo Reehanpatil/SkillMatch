@@ -1,1 +1,2049 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkillMatch — Find Jobs From Your GitHub</title>
+
+    <!-- SEO -->
+    <meta name="title" content="SkillMatch — Find Jobs From Your GitHub" />
+    <meta
+      name="description"
+      content="Find remote jobs based on your GitHub skills."
+    />
+    <meta
+      name="keywords"
+      content="remote jobs, GitHub skills, programming jobs matching, developer jobs, software engineering, job search, career opportunities, tech jobs, coding skills, job matching, software development, tech career, job board, remote work, developer opportunities"
+    />
+    <meta name="author" content="Reehan MP" />
+    <meta name="robots" content="index, follow" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://res.cloudinary.com/dayqtr9f9/image/upload/v1782573670/Screenshot_2026-06-27_204350_xirlz9.png"
+    />
+    <style>
+      :root {
+        --bg: #07090d;
+        --bg-2: #0b0e14;
+        --panel: rgba(255, 255, 255, 0.035);
+        --panel-strong: rgba(255, 255, 255, 0.05);
+        --line: rgba(255, 255, 255, 0.08);
+        --line-soft: rgba(255, 255, 255, 0.05);
+        --text: #eef1f5;
+        --muted: #8993a3;
+        --muted-dim: #5c6678;
+
+        --violet: #8b7cf6;
+        --violet-bright: #a78bfa;
+        --cyan: #38d3d3;
+        --pink: #f25fa3;
+        --amber: #f0b84f;
+        --green: #4ade80;
+
+        --shadow-soft: rgba(0, 0, 0, 0.3);
+        --grain-opacity: 0.025;
+        --mesh-opacity-1: 0.18;
+        --mesh-opacity-2: 0.12;
+        --mesh-opacity-3: 0.08;
+
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      [data-theme="light"] {
+        --bg: #f7f8fb;
+        --bg-2: #eef0f5;
+        --panel: rgba(20, 22, 30, 0.035);
+        --panel-strong: rgba(20, 22, 30, 0.05);
+        --line: rgba(20, 22, 30, 0.1);
+        --line-soft: rgba(20, 22, 30, 0.06);
+        --text: #1a1d27;
+        --muted: #5c6373;
+        --muted-dim: #8991a3;
+
+        --violet: #7c5ce0;
+        --violet-bright: #6d4fd1;
+        --cyan: #0d9c9c;
+        --pink: #d63d85;
+        --amber: #b8780f;
+        --green: #16a34a;
+
+        --shadow-soft: rgba(100, 110, 140, 0.15);
+        --grain-opacity: 0.015;
+        --mesh-opacity-1: 0.1;
+        --mesh-opacity-2: 0.08;
+        --mesh-opacity-3: 0.05;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: "Space Grotesk", sans-serif;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Ambient background mesh */
+      .mesh-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 800px 500px at 10% -5%,
+            rgba(139, 124, 246, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 700px 600px at 95% 10%,
+            rgba(56, 211, 211, 0.12),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 600px 500px at 50% 100%,
+            rgba(242, 95, 163, 0.08),
+            transparent 60%
+          ),
+          linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+        transition: background 0.3s ease;
+      }
+      [data-theme="light"] .mesh-bg {
+        background:
+          radial-gradient(
+            ellipse 800px 500px at 10% -5%,
+            rgba(124, 92, 224, 0.12),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 700px 600px at 95% 10%,
+            rgba(13, 156, 156, 0.09),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 600px 500px at 50% 100%,
+            rgba(214, 61, 133, 0.06),
+            transparent 60%
+          ),
+          linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      }
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 0.025;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      [data-theme="light"] .grain {
+        opacity: 0.015;
+      }
+      .content {
+        position: relative;
+        z-index: 2;
+      }
+
+      ::selection {
+        background: rgba(139, 124, 246, 0.35);
+      }
+      [data-theme="light"] ::selection {
+        background: rgba(124, 92, 224, 0.25);
+      }
+
+      /* Theme toggle button */
+      .theme-toggle-btn {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        transition: all 0.18s ease;
+        cursor: pointer;
+      }
+      .theme-toggle-btn:hover {
+        border-color: rgba(139, 124, 246, 0.45);
+        color: var(--violet-bright);
+      }
+      .theme-icon {
+        transition:
+          opacity 0.2s ease,
+          transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      /* Glass panel */
+      .glass {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        backdrop-filter: blur(16px);
+      }
+      .glass-strong {
+        background: var(--panel-strong);
+        border: 1px solid var(--line);
+        backdrop-filter: blur(20px);
+      }
+
+      /* Gradient text */
+      .grad-text {
+        background: linear-gradient(
+          115deg,
+          #ffffff 10%,
+          var(--violet-bright) 55%,
+          var(--cyan) 95%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      /* Search input glow */
+      .search-shell {
+        position: relative;
+        border-radius: 18px;
+        background: var(--panel-strong);
+        border: 1px solid var(--line);
+        transition:
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+      .search-shell:focus-within {
+        border-color: rgba(139, 124, 246, 0.55);
+        box-shadow:
+          0 0 0 4px rgba(139, 124, 246, 0.1),
+          0 8px 30px rgba(139, 124, 246, 0.15);
+      }
+      input::placeholder {
+        color: var(--muted-dim);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--violet), #6d5bd0);
+        box-shadow: 0 4px 20px rgba(139, 124, 246, 0.35);
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease,
+          filter 0.15s ease;
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 26px rgba(139, 124, 246, 0.5);
+        filter: brightness(1.08);
+      }
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .pill-example {
+        border: 1px solid var(--line);
+        color: var(--muted);
+        transition: all 0.15s ease;
+      }
+      .pill-example:hover {
+        border-color: rgba(139, 124, 246, 0.5);
+        color: var(--violet-bright);
+        background: rgba(139, 124, 246, 0.08);
+      }
+
+      /* Skill bars */
+      .skill-bar-track {
+        background: var(--line-soft);
+      }
+      .skill-bar-fill {
+        background: linear-gradient(90deg, var(--violet), var(--cyan));
+        transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .skill-pill {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+      .skill-pill.active {
+        border-color: rgba(139, 124, 246, 0.6);
+        background: rgba(139, 124, 246, 0.12);
+        box-shadow: 0 0 0 1px rgba(139, 124, 246, 0.2) inset;
+      }
+      .skill-pill.inactive {
+        opacity: 0.35;
+      }
+      .skill-pill:hover {
+        border-color: rgba(139, 124, 246, 0.45);
+      }
+
+      /* Job cards */
+      .job-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        transition:
+          transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+          border-color 0.2s ease,
+          background 0.2s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .job-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(139, 124, 246, 0.08),
+          transparent 50%
+        );
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        pointer-events: none;
+      }
+      .job-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(139, 124, 246, 0.4);
+        background: var(--panel-strong);
+      }
+      .job-card:hover::before {
+        opacity: 1;
+      }
+
+      /* Radial match ring */
+      .match-ring {
+        transform: rotate(-90deg);
+      }
+      .match-ring-bg {
+        stroke: var(--line);
+      }
+      .match-ring-fill {
+        stroke: var(--violet-bright);
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .tag-chip {
+        background: var(--line-soft);
+        border: 1px solid var(--line-soft);
+        color: var(--muted);
+      }
+
+      .apply-btn {
+        border: 1px solid rgba(139, 124, 246, 0.4);
+        color: var(--violet-bright);
+        transition: all 0.15s ease;
+      }
+      .apply-btn:hover {
+        background: linear-gradient(135deg, var(--violet), #6d5bd0);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 16px rgba(139, 124, 246, 0.4);
+      }
+
+      /* Loading */
+      .orbit-spinner {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        border-top-color: var(--violet-bright);
+        border-right-color: var(--cyan);
+        animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .blink {
+        animation: blink 1.1s steps(2, start) infinite;
+      }
+      @keyframes blink {
+        to {
+          visibility: hidden;
+        }
+      }
+
+      .fade-up {
+        animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stagger > * {
+        animation: fadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      .avatar-ring {
+        box-shadow:
+          0 0 0 3px var(--bg),
+          0 0 0 5px rgba(139, 124, 246, 0.4),
+          0 0 24px rgba(139, 124, 246, 0.25);
+      }
+
+      .divider-glow {
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(139, 124, 246, 0.5),
+          transparent
+        );
+      }
+
+      /* View toggle: Remote Jobs vs Projects */
+      .view-toggle-btn {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        transition: all 0.18s ease;
+      }
+      .view-toggle-btn:hover {
+        border-color: rgba(139, 124, 246, 0.4);
+        color: var(--text);
+      }
+      .view-toggle-btn.active {
+        background: linear-gradient(135deg, var(--violet), #6d5bd0);
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 4px 16px rgba(139, 124, 246, 0.35);
+      }
+
+      /* Add-skill input */
+      .add-skill-shell {
+        background: var(--panel);
+        border: 1px dashed var(--line);
+        border-radius: 999px;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+      .add-skill-shell:focus-within {
+        border-color: rgba(139, 124, 246, 0.6);
+        border-style: solid;
+        background: var(--panel-strong);
+      }
+      .skill-pill.custom {
+        border-color: rgba(56, 211, 211, 0.5);
+        background: rgba(56, 211, 211, 0.1);
+      }
+      .skill-pill.custom.active {
+        border-color: rgba(56, 211, 211, 0.7);
+        background: rgba(56, 211, 211, 0.16);
+      }
+      .remove-x {
+        opacity: 0.6;
+        transition: opacity 0.15s ease;
+      }
+      .remove-x:hover {
+        opacity: 1;
+        color: #f87171;
+      }
+
+      /* Live preview link on project cards */
+      .preview-btn {
+        border: 1px solid rgba(56, 211, 211, 0.4);
+        color: var(--cyan);
+        background: rgba(56, 211, 211, 0.08);
+        transition: all 0.15s ease;
+      }
+      .preview-btn:hover {
+        background: rgba(56, 211, 211, 0.18);
+        border-color: rgba(56, 211, 211, 0.7);
+      }
+
+      /* Shareable portfolio card */
+      .card-preview-shell {
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        box-shadow: 0 20px 50px var(--shadow-soft);
+        max-width: 100%;
+        line-height: 0;
+      }
+      #portfolioCanvas {
+        display: block;
+        width: 100%;
+        max-width: 480px;
+        height: auto;
+      }
+      @media (min-width: 1024px) {
+        #portfolioCanvas {
+          max-width: 440px;
+        }
+      }
+      .card-theme-swatch {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        position: relative;
+      }
+      .card-theme-swatch:hover {
+        transform: translateY(-2px);
+      }
+      .card-theme-swatch.active {
+        border-color: var(--text);
+        box-shadow: 0 0 0 2px var(--bg);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.001ms !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mesh-bg"></div>
+    <div class="grain"></div>
+
+    <div class="content">
+      <!-- Top bar -->
+      <header class="sticky top-0 z-40">
+        <div class="glass">
+          <div
+            class="max-w-6xl mx-auto px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between gap-2"
+          >
+            <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
+              <div
+                class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-[var(--violet)] to-[var(--cyan)] flex items-center justify-center shrink-0"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="sm:w-4 sm:h-4"
+                >
+                  <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
+                </svg>
+              </div>
+              <span
+                class="font-bold text-[14px] sm:text-[16px] tracking-tight shrink-0"
+                >SkillMatch</span
+              >
+              <span
+                id="visitCounter"
+                class="mono text-[10px] text-[var(--muted-dim)] px-1.5 sm:px-2 py-1 rounded-full glass items-center gap-1 flex shrink-0"
+              >
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="shrink-0"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <span id="visitCount">···</span>
+              </span>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+              <a
+                href="https://remotive.com"
+                target="_blank"
+                class="mono text-[11px] text-[var(--muted)] hover:text-[var(--violet-bright)] transition hidden md:block"
+                >jobs powered by remotive</a
+              >
+              <button
+                id="themeToggle"
+                aria-label="Toggle dark / light mode"
+                class="theme-toggle-btn w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shrink-0"
+              >
+                <svg
+                  id="iconMoon"
+                  class="theme-icon"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+                <svg
+                  id="iconSun"
+                  class="theme-icon hidden"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="5" />
+                  <path
+                    d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="max-w-6xl mx-auto px-5 sm:px-8 pb-28">
+        <!-- Hero / search -->
+        <section class="pt-16 sm:pt-24 pb-10 text-center">
+          <div
+            class="inline-flex items-center gap-2 mono text-[11px] uppercase tracking-[0.18em] text-[var(--violet-bright)] mb-5 px-3 py-1.5 rounded-full glass"
+          >
+            <span
+              class="w-1.5 h-1.5 rounded-full bg-[var(--green)] animate-pulse"
+            ></span>
+            repo in → role out
+          </div>
+          <h1
+            class="text-4xl sm:text-6xl font-bold tracking-tight mb-4 leading-[1.05]"
+          >
+            Your GitHub already<br />wrote your
+            <span class="grad-text">résumé.</span>
+          </h1>
+          <p
+            class="text-[var(--muted)] text-[15px] sm:text-base max-w-lg mx-auto mb-10"
+          >
+            Drop a GitHub username. We read the repos, work out what you
+            actually build, and surface matching open roles in seconds.
+          </p>
+
+          <div class="max-w-xl mx-auto">
+            <div class="search-shell flex items-center gap-2 px-5 py-3.5">
+              <span
+                class="mono text-[var(--muted-dim)] text-[14px] sm:text-[15px]"
+                >github.com/</span
+              >
+              <input
+                id="ghInput"
+                type="text"
+                placeholder="your-username"
+                autocomplete="off"
+                class="mono bg-transparent outline-none flex-1 text-[14px] sm:text-[15px] text-[var(--text)] min-w-0"
+              />
+              <button
+                id="searchBtn"
+                class="btn-primary text-white text-[13px] sm:text-[14px] font-semibold px-5 py-2 rounded-xl shrink-0 flex items-center gap-2"
+              >
+                <span id="btnLabel">Scan profile</span>
+              </button>
+            </div>
+            <p
+              id="errBox"
+              class="mono text-[12px] text-[#f87171] mt-4 hidden"
+            ></p>
+          </div>
+        </section>
+
+        <!-- Loading state -->
+        <div
+          id="loadingBox"
+          class="hidden max-w-lg mx-auto py-16 text-center fade-up"
+        >
+          <div class="orbit-spinner mx-auto mb-5"></div>
+          <p id="loadingText" class="mono text-[13px] text-[var(--muted)]">
+            connecting to api.github.com<span class="blink">_</span>
+          </p>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="hidden">
+          <!-- profile card -->
+          <section
+            class="glass-strong rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-5 mb-6 fade-up"
+          >
+            <img
+              id="avatar"
+              src=""
+              class="w-20 h-20 rounded-2xl avatar-ring shrink-0"
+            />
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline gap-2 flex-wrap">
+                <h2 id="profName" class="font-bold text-xl"></h2>
+                <span
+                  id="profLogin"
+                  class="mono text-[var(--muted)] text-sm"
+                ></span>
+              </div>
+              <p id="profBio" class="text-[var(--muted)] text-sm mt-1"></p>
+              <div
+                class="mono text-[11px] text-[var(--muted-dim)] flex gap-4 mt-3"
+              >
+                <span id="profRepos"></span>
+                <span id="profFollowers"></span>
+              </div>
+            </div>
+            <a
+              id="profLink"
+              href="#"
+              target="_blank"
+              class="apply-btn mono text-[12px] font-medium px-4 py-2 rounded-xl shrink-0 text-center"
+              >View profile →</a
+            >
+          </section>
+
+          <!-- view toggle: jobs vs projects vs card -->
+          <div
+            class="flex items-center gap-2 mb-8 fade-up flex-wrap"
+            style="animation-delay: 0.03s"
+          >
+            <button
+              id="viewJobsBtn"
+              class="view-toggle-btn active mono text-[13px] font-medium px-5 py-2.5 rounded-xl flex items-center gap-2"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="7" width="20" height="14" rx="2" />
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+              </svg>
+              Remote Jobs
+            </button>
+            <button
+              id="viewProjectsBtn"
+              class="view-toggle-btn mono text-[13px] font-medium px-5 py-2.5 rounded-xl flex items-center gap-2"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M3 9h18M9 21V9" />
+              </svg>
+              Projects
+            </button>
+            <button
+              id="viewCardBtn"
+              class="view-toggle-btn mono text-[13px] font-medium px-5 py-2.5 rounded-xl flex items-center gap-2"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <circle cx="8" cy="10" r="2" />
+                <path
+                  d="M2 17l4.5-4.5a2 2 0 0 1 2.8 0L14 17M16 14l1.5-1.5a2 2 0 0 1 2.8 0L22 14"
+                />
+              </svg>
+              Card
+            </button>
+          </div>
+
+          <!-- detected skills -->
+          <section class="mb-10 fade-up" style="animation-delay: 0.05s">
+            <div class="flex items-center justify-between mb-4">
+              <p
+                class="mono text-[11px] uppercase tracking-[0.15em] text-[var(--muted)]"
+              >
+                Detected skill profile
+              </p>
+              <p
+                class="mono text-[10px] text-[var(--muted-dim)] hidden sm:block"
+              >
+                click to toggle — filters roles below
+              </p>
+            </div>
+            <div id="skillChips" class="flex flex-wrap gap-2 mb-4"></div>
+
+            <div
+              class="add-skill-shell inline-flex items-center gap-2 px-3 py-1.5 mb-5"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                class="text-[var(--cyan)] shrink-0"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              <input
+                id="addSkillInput"
+                type="text"
+                placeholder="Add a skill GitHub missed…"
+                autocomplete="off"
+                class="mono bg-transparent outline-none text-[12px] text-[var(--text)] w-44 sm:w-52"
+              />
+            </div>
+
+            <div id="skillBars" class="grid sm:grid-cols-2 gap-3"></div>
+          </section>
+
+          <div class="divider-glow mb-10"></div>
+
+          <!-- JOBS panel -->
+          <section id="jobsPanel">
+            <div class="flex items-center justify-between mb-2 gap-3 flex-wrap">
+              <div>
+                <p
+                  class="mono text-[11px] uppercase tracking-[0.15em] text-[var(--muted)]"
+                >
+                  Matching remote jobs
+                  <span id="jobCount" class="text-[var(--muted-dim)]"></span>
+                </p>
+              </div>
+              <p
+                id="jobLoadingTag"
+                class="mono text-[11px] text-[var(--muted)] flex items-center gap-2 hidden"
+              >
+                <span
+                  class="w-3.5 h-3.5 rounded-full border-2 border-[var(--line)] border-t-[var(--violet-bright)]"
+                  style="animation: spin 0.7s linear infinite"
+                ></span>
+                fetching remotive…
+              </p>
+            </div>
+            <p class="mono text-[11px] text-[var(--muted-dim)] mb-5">
+              All roles below are fully remote, pulled live from the
+              <a
+                href="https://remotive.com"
+                target="_blank"
+                class="text-[var(--violet-bright)] hover:underline"
+                >Remotive</a
+              >
+              job board.
+            </p>
+
+            <div id="noJobs" class="hidden glass rounded-2xl p-10 text-center">
+              <p class="mono text-sm text-[var(--muted)]">
+                No close matches in today's feed for the selected skills. Try
+                toggling fewer skills, or check back later — Remotive refreshes
+                daily.
+              </p>
+            </div>
+
+            <div
+              id="jobGrid"
+              class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger"
+            ></div>
+          </section>
+
+          <!-- PROJECTS panel -->
+          <section id="projectsPanel" class="hidden">
+            <div class="flex items-center justify-between mb-2 gap-3 flex-wrap">
+              <p
+                class="mono text-[11px] uppercase tracking-[0.15em] text-[var(--muted)]"
+              >
+                Public repositories
+                <span id="repoCount" class="text-[var(--muted-dim)]"></span>
+              </p>
+            </div>
+            <p class="mono text-[11px] text-[var(--muted-dim)] mb-5">
+              Repos with GitHub Pages enabled show a "Live preview" link that
+              opens the deployed site directly.
+            </p>
+
+            <div
+              id="repoGrid"
+              class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger"
+            ></div>
+          </section>
+
+          <!-- CARD panel -->
+          <section id="cardPanel" class="hidden">
+            <div class="flex items-center justify-between mb-2 gap-3 flex-wrap">
+              <p
+                class="mono text-[11px] uppercase tracking-[0.15em] text-[var(--muted)]"
+              >
+                Shareable portfolio card
+              </p>
+            </div>
+            <p class="mono text-[11px] text-[var(--muted-dim)] mb-6">
+              A snapshot of your skill profile, ready to drop on LinkedIn,
+              Twitter, or your resume.
+            </p>
+
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+              <!-- Card preview -->
+              <div class="w-full lg:w-auto flex justify-center">
+                <div id="cardPreviewWrap" class="card-preview-shell">
+                  <canvas
+                    id="portfolioCanvas"
+                    width="1000"
+                    height="700"
+                  ></canvas>
+                </div>
+              </div>
+
+              <!-- Controls -->
+              <div class="flex-1 w-full lg:max-w-xs">
+                <p
+                  class="mono text-[10px] uppercase tracking-[0.15em] text-[var(--muted-dim)] mb-3"
+                >
+                  Card theme
+                </p>
+                <div id="cardThemeOptions" class="flex gap-2.5 mb-7">
+                  <button
+                    class="card-theme-swatch active"
+                    data-theme="violet"
+                    style="
+                      background: linear-gradient(135deg, #8b7cf6, #38d3d3);
+                    "
+                    aria-label="Violet theme"
+                  ></button>
+                  <button
+                    class="card-theme-swatch"
+                    data-theme="sunset"
+                    style="
+                      background: linear-gradient(135deg, #f25fa3, #f0b84f);
+                    "
+                    aria-label="Sunset theme"
+                  ></button>
+                  <button
+                    class="card-theme-swatch"
+                    data-theme="midnight"
+                    style="
+                      background: linear-gradient(135deg, #1a1d27, #38d3d3);
+                    "
+                    aria-label="Midnight theme"
+                  ></button>
+                  <button
+                    class="card-theme-swatch"
+                    data-theme="forest"
+                    style="
+                      background: linear-gradient(135deg, #16a34a, #38d3d3);
+                    "
+                    aria-label="Forest theme"
+                  ></button>
+                </div>
+
+                <button
+                  id="downloadCardBtn"
+                  class="btn-primary text-white text-[13px] font-semibold px-5 py-3 rounded-xl w-full flex items-center justify-center gap-2 mb-3"
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <path d="M7 10l5 5 5-5M12 15V3" />
+                  </svg>
+                  Download as PNG
+                </button>
+                <p class="mono text-[10px] text-[var(--muted-dim)] text-center">
+                  1000×700px · ready for LinkedIn &amp; Twitter
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="border-t border-[var(--line)] py-6 text-center px-5">
+        <p class="mono text-[11px] text-[var(--muted-dim)]">
+          Developed by Reehan MP
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      const ghInput = document.getElementById("ghInput");
+      const searchBtn = document.getElementById("searchBtn");
+      const btnLabel = document.getElementById("btnLabel");
+      const errBox = document.getElementById("errBox");
+      const loadingBox = document.getElementById("loadingBox");
+      const loadingText = document.getElementById("loadingText");
+      const results = document.getElementById("results");
+
+      function fillExample(name) {
+        ghInput.value = name;
+        runSearch();
+      }
+
+      function showError(msg) {
+        errBox.textContent = msg;
+        errBox.classList.remove("hidden");
+      }
+      function clearError() {
+        errBox.classList.add("hidden");
+      }
+
+      function extractUsername(raw) {
+        raw = raw.trim();
+        if (!raw) return null;
+        try {
+          if (raw.includes("github.com")) {
+            const u = new URL(raw.startsWith("http") ? raw : "https://" + raw);
+            const parts = u.pathname.split("/").filter(Boolean);
+            return parts[0] || null;
+          }
+        } catch (e) {
+          /* not a url, fall through */
+        }
+        return raw.replace(/^@/, "").split("/")[0];
+      }
+
+      const LANGUAGE_WEIGHT = 1.0;
+      const TOPIC_WEIGHT = 1.4;
+
+      const TOPIC_ALIASES = {
+        reactjs: "react",
+        "react-js": "react",
+        vuejs: "vue",
+        "vue-js": "vue",
+        nodejs: "node",
+        "node-js": "node",
+        tensorflow: "tensorflow",
+        "machine-learning": "machine learning",
+        ml: "machine learning",
+        "deep-learning": "deep learning",
+        "artificial-intelligence": "ai",
+        nextjs: "next.js",
+        "next-js": "next.js",
+        tailwindcss: "tailwind",
+        "docker-image": "docker",
+        kubernetes: "kubernetes",
+        k8s: "kubernetes",
+        "restful-api": "rest api",
+        "rest-api": "rest api",
+        graphql: "graphql",
+        typescript: "typescript",
+        javascript: "javascript",
+      };
+
+      function normalizeTag(tag) {
+        const t = tag.toLowerCase().trim();
+        return TOPIC_ALIASES[t] || t;
+      }
+
+      async function fetchJSON(url, headers = {}) {
+        const res = await fetch(url, { headers });
+        if (!res.ok) {
+          if (res.status === 404) throw { code: 404 };
+          if (res.status === 403) throw { code: 403 };
+          throw { code: res.status };
+        }
+        return res.json();
+      }
+
+      async function runSearch() {
+        clearError();
+        const username = extractUsername(ghInput.value);
+        if (!username) {
+          showError("Enter a GitHub username or profile link first.");
+          return;
+        }
+
+        results.classList.add("hidden");
+        loadingBox.classList.remove("hidden");
+        searchBtn.disabled = true;
+        btnLabel.textContent = "Scanning…";
+
+        // Clear any stale data from a previous user immediately, so nothing
+        // old lingers on screen while the new profile loads.
+        lastProfile = null;
+        lastRepos = [];
+        jobCache = [];
+        detectedSkillEntries = [];
+        lastTopMatchPct = 0;
+        const staleCanvas = document.getElementById("portfolioCanvas");
+        if (staleCanvas) {
+          staleCanvas
+            .getContext("2d")
+            .clearRect(0, 0, staleCanvas.width, staleCanvas.height);
+        }
+
+        try {
+          loadingText.innerHTML =
+            'fetching profile for <span class="text-[var(--text)]">' +
+            username +
+            '</span><span class="blink">_</span>';
+          const profile = await fetchJSON(
+            `https://api.github.com/users/${encodeURIComponent(username)}`,
+          );
+
+          loadingText.innerHTML =
+            'reading repositories<span class="blink">_</span>';
+          const repos = await fetchJSON(
+            `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated`,
+          );
+
+          if (!Array.isArray(repos) || repos.length === 0) {
+            showError("This user has no public repositories to scan yet.");
+            resetUI();
+            return;
+          }
+
+          const skillScores = {};
+          const addSkill = (name, weight) => {
+            if (!name) return;
+            skillScores[name] = (skillScores[name] || 0) + weight;
+          };
+
+          repos
+            .filter((r) => !r.fork)
+            .forEach((r) => {
+              if (r.language)
+                addSkill(normalizeTag(r.language), LANGUAGE_WEIGHT);
+              (r.topics || []).forEach((t) =>
+                addSkill(normalizeTag(t), TOPIC_WEIGHT),
+              );
+            });
+
+          let skillEntries = Object.entries(skillScores)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10);
+
+          if (skillEntries.length === 0) {
+            showError(
+              "Could not detect any languages or topics from public repos — profile may be too sparse.",
+            );
+            resetUI();
+            return;
+          }
+
+          lastProfile = profile;
+          lastRepos = repos.filter((r) => !r.fork);
+          renderProfile(profile);
+          renderSkills(skillEntries);
+          renderRepos(repos.filter((r) => !r.fork));
+
+          loadingBox.classList.add("hidden");
+          results.classList.remove("hidden");
+          resetButton();
+
+          fetchAndRenderJobs(skillEntries.map((e) => e[0]));
+        } catch (err) {
+          resetUI();
+          if (err.code === 404)
+            showError(`No GitHub user named "${username}" found.`);
+          else if (err.code === 403)
+            showError(
+              "GitHub API rate limit hit (60 req/hr without auth). Wait a bit and try again.",
+            );
+          else
+            showError(
+              "Something went wrong reaching GitHub. Try again in a moment.",
+            );
+        }
+      }
+
+      function resetUI() {
+        loadingBox.classList.add("hidden");
+        resetButton();
+      }
+      function resetButton() {
+        searchBtn.disabled = false;
+        btnLabel.textContent = "Scan profile";
+      }
+
+      function renderProfile(p) {
+        document.getElementById("avatar").src = p.avatar_url;
+        document.getElementById("profName").textContent = p.name || p.login;
+        document.getElementById("profLogin").textContent = "@" + p.login;
+        document.getElementById("profBio").textContent = p.bio || "";
+        document.getElementById("profRepos").textContent =
+          `${p.public_repos} repos`;
+        document.getElementById("profFollowers").textContent =
+          `${p.followers} followers`;
+        document.getElementById("profLink").href = p.html_url;
+      }
+
+      let activeSkills = new Set();
+      let customSkills = new Set();
+      let detectedSkillEntries = [];
+
+      function renderSkills(skillEntries) {
+        detectedSkillEntries = skillEntries;
+        activeSkills = new Set(skillEntries.map((e) => e[0]));
+        customSkills = new Set();
+        rebuildSkillChips();
+        rebuildSkillBars();
+      }
+
+      function rebuildSkillChips() {
+        const chipWrap = document.getElementById("skillChips");
+        chipWrap.innerHTML = "";
+
+        detectedSkillEntries.forEach(([skill], i) => {
+          chipWrap.appendChild(makeSkillChip(skill, i, false));
+        });
+        let j = detectedSkillEntries.length;
+        customSkills.forEach((skill) => {
+          chipWrap.appendChild(makeSkillChip(skill, j++, true));
+        });
+      }
+
+      function makeSkillChip(skill, i, isCustom) {
+        const chip = document.createElement("button");
+        const active = activeSkills.has(skill);
+        chip.className = `skill-pill ${active ? "active" : "inactive"} ${isCustom ? "custom" : ""} mono text-[12px] px-3.5 py-1.5 rounded-full fade-up flex items-center gap-1.5`;
+        chip.style.animationDelay = i * 0.04 + "s";
+
+        const label = document.createElement("span");
+        label.textContent = skill;
+        chip.appendChild(label);
+
+        if (isCustom) {
+          const x = document.createElement("span");
+          x.className = "remove-x";
+          x.textContent = "✕";
+          x.onclick = (e) => {
+            e.stopPropagation();
+            customSkills.delete(skill);
+            activeSkills.delete(skill);
+            rebuildSkillChips();
+            renderJobsFromCache();
+          };
+          chip.appendChild(x);
+        }
+
+        chip.addEventListener("click", (e) => {
+          if (e.target.classList.contains("remove-x")) return;
+          toggleSkill(skill, chip);
+        });
+
+        return chip;
+      }
+
+      function rebuildSkillBars() {
+        const barWrap = document.getElementById("skillBars");
+        barWrap.innerHTML = "";
+        const maxScore = Math.max(...detectedSkillEntries.map((e) => e[1]), 1);
+
+        detectedSkillEntries.slice(0, 6).forEach(([skill, score], i) => {
+          const pct = Math.round((score / maxScore) * 100);
+          const barRow = document.createElement("div");
+          barRow.className = "fade-up";
+          barRow.style.animationDelay = i * 0.05 + "s";
+          barRow.innerHTML = `
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="mono text-[12px] text-[var(--text)]">${skill}</span>
+        <span class="mono text-[10px] text-[var(--muted-dim)]">${pct}%</span>
+      </div>
+      <div class="skill-bar-track h-1.5 rounded-full overflow-hidden">
+        <div class="skill-bar-fill h-1.5 rounded-full" style="width:0%" data-target="${pct}"></div>
+      </div>
+    `;
+          barWrap.appendChild(barRow);
+        });
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            document.querySelectorAll(".skill-bar-fill").forEach((el) => {
+              el.style.width = el.dataset.target + "%";
+            });
+          }, 50);
+        });
+      }
+
+      function addCustomSkill(raw) {
+        const skill = raw.trim().toLowerCase();
+        if (!skill) return;
+        if (activeSkills.has(skill) || customSkills.has(skill)) {
+          document.getElementById("addSkillInput").value = "";
+          return;
+        }
+        customSkills.add(skill);
+        activeSkills.add(skill);
+        rebuildSkillChips();
+        document.getElementById("addSkillInput").value = "";
+        renderJobsFromCache();
+      }
+
+      function toggleSkill(skill, chipEl) {
+        if (activeSkills.has(skill)) {
+          if (activeSkills.size === 1) return; // keep at least one active
+          activeSkills.delete(skill);
+          chipEl.classList.remove("active");
+          chipEl.classList.add("inactive");
+        } else {
+          activeSkills.add(skill);
+          chipEl.classList.add("active");
+          chipEl.classList.remove("inactive");
+        }
+        renderJobsFromCache();
+      }
+
+      let jobCache = [];
+
+      async function fetchAndRenderJobs(skillList) {
+        const tag = document.getElementById("jobLoadingTag");
+        tag.classList.remove("hidden");
+        document.getElementById("noJobs").classList.add("hidden");
+        document.getElementById("jobGrid").innerHTML = "";
+
+        try {
+          const searchTerm = skillList.slice(0, 3).join(" ");
+          const data = await fetchJSON(
+            `https://remotive.com/api/remote-jobs?search=${encodeURIComponent(searchTerm)}&limit=80`,
+          );
+          jobCache = data.jobs || [];
+          renderJobsFromCache();
+          // If the user is already looking at the Card tab, refresh it now
+          // that the match score is available.
+          if (!cardPanel.classList.contains("hidden")) {
+            drawPortfolioCard();
+          }
+        } catch (e) {
+          document.getElementById("jobGrid").innerHTML = "";
+          document.getElementById("noJobs").classList.remove("hidden");
+          document.getElementById("noJobs").querySelector("p").textContent =
+            "Could not reach the Remotive jobs feed right now. Try again shortly.";
+        } finally {
+          tag.classList.add("hidden");
+        }
+      }
+
+      function scoreJob(job, skills) {
+        const haystack =
+          `${job.title} ${(job.tags || []).join(" ")} ${job.category || ""}`.toLowerCase();
+        let hits = 0;
+        skills.forEach((s) => {
+          if (haystack.includes(s.toLowerCase())) hits++;
+        });
+        return hits;
+      }
+
+      const RING_COLORS = ["#a78bfa", "#38d3d3", "#f25fa3", "#f0b84f"];
+
+      function renderJobsFromCache() {
+        const skills = Array.from(activeSkills);
+        const scored = jobCache
+          .map((j) => ({ job: j, score: scoreJob(j, skills) }))
+          .filter((x) => x.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 24);
+
+        const grid = document.getElementById("jobGrid");
+        const countTag = document.getElementById("jobCount");
+        grid.innerHTML = "";
+
+        if (scored.length === 0) {
+          document.getElementById("noJobs").classList.remove("hidden");
+          document.getElementById("noJobs").querySelector("p").textContent =
+            "No close matches in today's feed for the selected skills. Try toggling fewer skills, or check back later — Remotive refreshes daily.";
+          countTag.textContent = "";
+          lastTopMatchPct = 0;
+          return;
+        }
+
+        document.getElementById("noJobs").classList.add("hidden");
+        countTag.textContent = `(${scored.length})`;
+
+        const maxScore = Math.max(...scored.map((s) => s.score), 1);
+        const RADIUS = 18;
+        const CIRC = 2 * Math.PI * RADIUS;
+
+        lastTopMatchPct = Math.min(
+          100,
+          Math.round((scored[0].score / Math.max(maxScore, 3)) * 100),
+        );
+
+        scored.forEach(({ job, score }, i) => {
+          const pct = Math.min(
+            100,
+            Math.round((score / Math.max(maxScore, 3)) * 100),
+          );
+          const offset = CIRC - (pct / 100) * CIRC;
+          const color = RING_COLORS[i % RING_COLORS.length];
+
+          const card = document.createElement("div");
+          card.className = "job-card p-5 fade-up";
+          card.style.animationDelay = i * 0.04 + "s";
+          card.innerHTML = `
+      <div class="flex items-start justify-between gap-3 mb-4">
+        <div class="min-w-0 flex-1">
+          <h3 class="font-semibold text-[15px] leading-snug mb-1 line-clamp-2">${escapeHtml(job.title)}</h3>
+          <p class="mono text-[12px] text-[var(--muted)] truncate">${escapeHtml(job.company_name || "Unknown company")}</p>
+        </div>
+        <div class="relative shrink-0 w-12 h-12">
+          <svg width="48" height="48" viewBox="0 0 48 48" class="match-ring">
+            <circle cx="24" cy="24" r="${RADIUS}" fill="none" stroke-width="4" class="match-ring-bg"/>
+            <circle cx="24" cy="24" r="${RADIUS}" fill="none" stroke-width="4" class="match-ring-fill"
+              stroke="${color}" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}" data-offset="${offset}"/>
+          </svg>
+          <span class="absolute inset-0 flex items-center justify-center mono text-[10px] font-bold">${pct}%</span>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-1.5 mb-4">
+        ${(job.tags || [])
+          .slice(0, 3)
+          .map(
+            (t) =>
+              `<span class="tag-chip mono text-[10px] px-2 py-1 rounded-md">${escapeHtml(t)}</span>`,
+          )
+          .join("")}
+      </div>
+      <div class="flex items-center justify-between gap-2 pt-3 border-t border-[var(--line-soft)]">
+        <span class="mono text-[11px] text-[var(--muted-dim)] truncate">${escapeHtml(job.candidate_required_location || "Worldwide")}</span>
+        <a href="${job.url}" target="_blank" class="apply-btn mono text-[11px] font-medium px-3 py-1.5 rounded-lg whitespace-nowrap shrink-0">Apply →</a>
+      </div>
+    `;
+          grid.appendChild(card);
+        });
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            document.querySelectorAll(".match-ring-fill").forEach((el) => {
+              el.style.strokeDashoffset = el.dataset.offset;
+            });
+          }, 80);
+        });
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      /* ---------- Repositories + GitHub Pages preview ---------- */
+
+      let currentUsername = "";
+
+      function renderRepos(repos) {
+        const grid = document.getElementById("repoGrid");
+        const countTag = document.getElementById("repoCount");
+        grid.innerHTML = "";
+
+        const sorted = [...repos]
+          .sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0))
+          .slice(0, 12);
+        countTag.textContent = `(${repos.length})`;
+
+        sorted.forEach((repo, i) => {
+          const card = document.createElement("div");
+          card.className = "job-card p-5 fade-up";
+          card.style.animationDelay = i * 0.04 + "s";
+
+          const pagesUrl =
+            repo.has_pages ?
+              `https://${repo.owner.login}.github.io/${repo.name}/`
+            : null;
+
+          card.innerHTML = `
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <div class="min-w-0 flex-1">
+          <h3 class="font-semibold text-[14px] leading-snug mb-1 truncate">${escapeHtml(repo.name)}</h3>
+          <p class="text-[12px] text-[var(--muted)] line-clamp-2 min-h-[2.2em]">${escapeHtml(repo.description || "No description provided.")}</p>
+        </div>
+        ${repo.has_pages ? `<span class="mono text-[9px] px-2 py-1 rounded-md bg-[rgba(56,211,211,0.15)] text-[var(--cyan)] shrink-0">PAGES</span>` : ""}
+      </div>
+      <div class="flex items-center gap-3 mb-4 mono text-[11px] text-[var(--muted-dim)]">
+        ${repo.language ? `<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[var(--violet-bright)] inline-block"></span>${escapeHtml(repo.language)}</span>` : ""}
+        <span>★ ${repo.stargazers_count || 0}</span>
+      </div>
+      <div class="flex items-center justify-between gap-2 pt-3 border-t border-[var(--line-soft)]">
+        <a href="${repo.html_url}" target="_blank" class="mono text-[11px] text-[var(--muted)] hover:text-[var(--violet-bright)]">view code →</a>
+        ${pagesUrl ? `<a href="${pagesUrl}" target="_blank" class="preview-btn mono text-[11px] font-medium px-3 py-1.5 rounded-lg whitespace-nowrap">▶ Live preview</a>` : ""}
+      </div>
+    `;
+          grid.appendChild(card);
+        });
+      }
+
+      /* ---------- Jobs / Projects / Card view switch ---------- */
+
+      const viewJobsBtn = document.getElementById("viewJobsBtn");
+      const viewProjectsBtn = document.getElementById("viewProjectsBtn");
+      const viewCardBtn = document.getElementById("viewCardBtn");
+      const jobsPanel = document.getElementById("jobsPanel");
+      const projectsPanel = document.getElementById("projectsPanel");
+      const cardPanel = document.getElementById("cardPanel");
+
+      const VIEW_BUTTONS = [
+        { btn: viewJobsBtn, panel: jobsPanel },
+        { btn: viewProjectsBtn, panel: projectsPanel },
+        { btn: viewCardBtn, panel: cardPanel },
+      ];
+
+      function switchView(activeBtn, activePanel) {
+        VIEW_BUTTONS.forEach(({ btn, panel }) => {
+          const isActive = btn === activeBtn;
+          btn.classList.toggle("active", isActive);
+          panel.classList.toggle("hidden", !isActive);
+        });
+        if (activePanel === cardPanel) {
+          drawPortfolioCard();
+        }
+      }
+
+      viewJobsBtn.addEventListener("click", () =>
+        switchView(viewJobsBtn, jobsPanel),
+      );
+      viewProjectsBtn.addEventListener("click", () =>
+        switchView(viewProjectsBtn, projectsPanel),
+      );
+      viewCardBtn.addEventListener("click", () =>
+        switchView(viewCardBtn, cardPanel),
+      );
+
+      /* ---------- Add custom skill ---------- */
+
+      const addSkillInput = document.getElementById("addSkillInput");
+      addSkillInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          addCustomSkill(addSkillInput.value);
+        }
+      });
+
+      searchBtn.addEventListener("click", runSearch);
+      ghInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") runSearch();
+      });
+
+      /* ---------- Dark / Light theme toggle ---------- */
+
+      const themeToggle = document.getElementById("themeToggle");
+      const iconMoon = document.getElementById("iconMoon");
+      const iconSun = document.getElementById("iconSun");
+      const htmlEl = document.documentElement;
+
+      function applyTheme(theme) {
+        if (theme === "light") {
+          htmlEl.setAttribute("data-theme", "light");
+          iconMoon.classList.add("hidden");
+          iconSun.classList.remove("hidden");
+        } else {
+          htmlEl.removeAttribute("data-theme");
+          iconSun.classList.add("hidden");
+          iconMoon.classList.remove("hidden");
+        }
+      }
+
+      // Default to dark; respect system preference only if it explicitly says light
+      const prefersLight =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: light)").matches;
+      applyTheme(prefersLight ? "light" : "dark");
+
+      themeToggle.addEventListener("click", () => {
+        const isLight = htmlEl.getAttribute("data-theme") === "light";
+        applyTheme(isLight ? "dark" : "light");
+      });
+
+      /* ---------- Shareable portfolio card ---------- */
+
+      const CARD_THEMES = {
+        violet: {
+          bg: ["#0d0a1f", "#1a1340"],
+          accent: "#a78bfa",
+          accent2: "#38d3d3",
+          textOnDark: "#f5f3ff",
+        },
+        sunset: {
+          bg: ["#2a0e1f", "#3d1226"],
+          accent: "#f25fa3",
+          accent2: "#f0b84f",
+          textOnDark: "#fff5f0",
+        },
+        midnight: {
+          bg: ["#070a12", "#0e1722"],
+          accent: "#38d3d3",
+          accent2: "#5c9eff",
+          textOnDark: "#eef6f8",
+        },
+        forest: {
+          bg: ["#08160f", "#0d2418"],
+          accent: "#4ade80",
+          accent2: "#38d3d3",
+          textOnDark: "#eefcf3",
+        },
+      };
+
+      let activeCardTheme = "violet";
+      let lastProfile = null;
+      let lastRepos = [];
+      let lastTopMatchPct = 0;
+
+      function roundRectPath(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
+
+      async function loadImageSafe(url) {
+        if (!url) return Promise.resolve(null);
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => resolve(img);
+          img.onerror = () => resolve(null);
+          img.src = url;
+        });
+      }
+
+      function drawAvatarFallback(ctx, cx, cy, r, initial, theme) {
+        const grad = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+        grad.addColorStop(0, theme.accent);
+        grad.addColorStop(1, theme.accent2);
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.fillStyle = "#0a0a0f";
+        ctx.font = `700 ${r}px 'Space Grotesk', sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(initial.toUpperCase(), cx, cy + r * 0.06);
+        ctx.restore();
+      }
+
+      async function drawPortfolioCard() {
+        if (!lastProfile) return;
+        if (document.fonts && document.fonts.ready) {
+          try {
+            await document.fonts.ready;
+          } catch (e) {
+            /* ignore, draw with whatever fonts are available */
+          }
+        }
+        const canvas = document.getElementById("portfolioCanvas");
+        const ctx = canvas.getContext("2d");
+        const W = canvas.width;
+        const H = canvas.height;
+        const theme = CARD_THEMES[activeCardTheme];
+
+        // Background gradient
+        const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+        bgGrad.addColorStop(0, theme.bg[0]);
+        bgGrad.addColorStop(1, theme.bg[1]);
+        ctx.fillStyle = bgGrad;
+        roundRectPath(ctx, 0, 0, W, H, 28);
+        ctx.fill();
+
+        // Ambient glow accents
+        const glow1 = ctx.createRadialGradient(
+          W * 0.85,
+          H * 0.1,
+          0,
+          W * 0.85,
+          H * 0.1,
+          420,
+        );
+        glow1.addColorStop(0, theme.accent + "33");
+        glow1.addColorStop(1, "transparent");
+        ctx.fillStyle = glow1;
+        ctx.fillRect(0, 0, W, H);
+
+        const glow2 = ctx.createRadialGradient(
+          W * 0.1,
+          H * 0.95,
+          0,
+          W * 0.1,
+          H * 0.95,
+          380,
+        );
+        glow2.addColorStop(0, theme.accent2 + "22");
+        glow2.addColorStop(1, "transparent");
+        ctx.fillStyle = glow2;
+        ctx.fillRect(0, 0, W, H);
+
+        const PAD = 56;
+
+        // ---- Match score badge (top-right) ----
+        if (lastTopMatchPct > 0) {
+          const badgeW = 168;
+          const badgeH = 64;
+          const badgeX = W - PAD - badgeW;
+          const badgeY = PAD - 8;
+
+          roundRectPath(ctx, badgeX, badgeY, badgeW, badgeH, 16);
+          const badgeGrad = ctx.createLinearGradient(
+            badgeX,
+            badgeY,
+            badgeX + badgeW,
+            badgeY + badgeH,
+          );
+          badgeGrad.addColorStop(0, theme.accent);
+          badgeGrad.addColorStop(1, theme.accent2);
+          ctx.fillStyle = badgeGrad;
+          ctx.fill();
+
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#0a0a0f";
+          ctx.font = "800 28px 'Space Grotesk', sans-serif";
+          ctx.textBaseline = "alphabetic";
+          ctx.fillText(`${lastTopMatchPct}%`, badgeX + badgeW / 2, badgeY + 34);
+          ctx.font = "600 11px 'JetBrains Mono', monospace";
+          ctx.fillText("JOB MATCH", badgeX + badgeW / 2, badgeY + 52);
+          ctx.textAlign = "left";
+        }
+
+        // Avatar
+        const avatarR = 56;
+        const avatarCx = PAD + avatarR;
+        const avatarCy = PAD + avatarR;
+
+        const img = await loadImageSafe(lastProfile.avatar_url);
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(avatarCx, avatarCy, avatarR, 0, Math.PI * 2);
+        ctx.closePath();
+        if (img) {
+          ctx.clip();
+          ctx.drawImage(
+            img,
+            avatarCx - avatarR,
+            avatarCy - avatarR,
+            avatarR * 2,
+            avatarR * 2,
+          );
+          ctx.restore();
+        } else {
+          ctx.restore();
+          drawAvatarFallback(
+            ctx,
+            avatarCx,
+            avatarCy,
+            avatarR,
+            (lastProfile.name || lastProfile.login || "?")[0],
+            theme,
+          );
+        }
+        // Ring around avatar
+        ctx.beginPath();
+        ctx.arc(avatarCx, avatarCy, avatarR + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = theme.accent;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Name + username
+        const nameX = avatarCx + avatarR + 28;
+        ctx.fillStyle = theme.textOnDark;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+        ctx.font = "700 34px 'Space Grotesk', sans-serif";
+        ctx.fillText(lastProfile.name || lastProfile.login, nameX, PAD + 38);
+
+        ctx.font = "400 20px 'JetBrains Mono', monospace";
+        ctx.fillStyle = theme.accent;
+        ctx.fillText("@" + lastProfile.login, nameX, PAD + 68);
+
+        ctx.font = "400 16px 'JetBrains Mono', monospace";
+        ctx.fillStyle = theme.textOnDark + "aa";
+        ctx.fillText(
+          `${lastProfile.public_repos} repos  ·  ${lastProfile.followers} followers`,
+          nameX,
+          PAD + 96,
+        );
+
+        // Divider
+        const dividerY = PAD + avatarR * 2 - 10;
+        ctx.strokeStyle = theme.accent + "30";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(PAD, dividerY + 20);
+        ctx.lineTo(W - PAD, dividerY + 20);
+        ctx.stroke();
+
+        // ---- Skills label + chips ----
+        let cursorY = dividerY + 58;
+        ctx.font = "600 14px 'JetBrains Mono', monospace";
+        ctx.fillStyle = theme.accent;
+        ctx.fillText("TOP SKILLS", PAD, cursorY);
+
+        cursorY += 26;
+        let cursorX = PAD;
+        const chipH = 42;
+        const chipGapX = 12;
+        const chipGapY = 14;
+        const maxRowWidth = W - PAD * 2;
+
+        ctx.font = "600 19px 'Space Grotesk', sans-serif";
+
+        const skillsToShow = detectedSkillEntries.slice(0, 6).map((e) => e[0]);
+
+        skillsToShow.forEach((skill) => {
+          const textW = ctx.measureText(skill).width;
+          const chipW = textW + 38;
+
+          if (cursorX + chipW > PAD + maxRowWidth) {
+            cursorX = PAD;
+            cursorY += chipH + chipGapY;
+          }
+
+          roundRectPath(ctx, cursorX, cursorY, chipW, chipH, chipH / 2);
+          ctx.fillStyle = theme.accent + "22";
+          ctx.fill();
+          ctx.strokeStyle = theme.accent + "55";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = theme.textOnDark;
+          ctx.textBaseline = "middle";
+          ctx.fillText(skill, cursorX + 19, cursorY + chipH / 2 + 1);
+
+          cursorX += chipW + chipGapX;
+        });
+
+        cursorY += chipH + 44;
+        ctx.textBaseline = "alphabetic";
+
+        // ---- Language breakdown bar ----
+        const langCounts = {};
+        lastRepos.forEach((r) => {
+          if (r.language)
+            langCounts[r.language] = (langCounts[r.language] || 0) + 1;
+        });
+        const langEntries = Object.entries(langCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+        const langTotal = langEntries.reduce((sum, [, c]) => sum + c, 0);
+
+        if (langEntries.length > 0) {
+          ctx.font = "600 14px 'JetBrains Mono', monospace";
+          ctx.fillStyle = theme.accent;
+          ctx.fillText("LANGUAGE MIX", PAD, cursorY);
+
+          cursorY += 22;
+          const barH = 14;
+          const barW = W - PAD * 2;
+          const langPalette = [
+            theme.accent,
+            theme.accent2,
+            theme.textOnDark + "99",
+            theme.textOnDark + "66",
+            theme.textOnDark + "40",
+          ];
+
+          roundRectPath(ctx, PAD, cursorY, barW, barH, barH / 2);
+          ctx.fillStyle = theme.textOnDark + "14";
+          ctx.fill();
+
+          let barX = PAD;
+          langEntries.forEach(([, count], i) => {
+            const segW = (count / langTotal) * barW;
+            ctx.fillStyle = langPalette[i];
+            ctx.fillRect(barX, cursorY, Math.max(segW, 2), barH);
+            barX += segW;
+          });
+
+          cursorY += barH + 22;
+          ctx.font = "500 15px 'JetBrains Mono', monospace";
+          let legendX = PAD;
+          langEntries.forEach(([lang], i) => {
+            ctx.fillStyle = langPalette[i];
+            ctx.beginPath();
+            ctx.arc(legendX + 5, cursorY - 5, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = theme.textOnDark + "cc";
+            ctx.fillText(lang, legendX + 16, cursorY);
+            legendX += ctx.measureText(lang).width + 44;
+          });
+
+          cursorY += 40;
+        }
+
+        // ---- Top starred repo ----
+        const topRepo = [...lastRepos].sort(
+          (a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0),
+        )[0];
+
+        if (topRepo && (topRepo.stargazers_count || 0) >= 0) {
+          ctx.font = "600 14px 'JetBrains Mono', monospace";
+          ctx.fillStyle = theme.accent;
+          ctx.fillText("TOP PROJECT", PAD, cursorY);
+
+          cursorY += 28;
+          ctx.font = "700 20px 'Space Grotesk', sans-serif";
+          ctx.fillStyle = theme.textOnDark;
+          ctx.fillText(topRepo.name, PAD, cursorY);
+
+          const starText = `★ ${topRepo.stargazers_count || 0}`;
+          ctx.font = "600 16px 'JetBrains Mono', monospace";
+          ctx.fillStyle = theme.accent2;
+          ctx.fillText(
+            starText,
+            PAD + ctx.measureText(topRepo.name).width + 18,
+            cursorY - 1,
+          );
+        }
+
+        // ---- QR code (links to GitHub profile) ----
+        let qrDrawn = false;
+        if (typeof QRious !== "undefined" && lastProfile.html_url) {
+          const qrSize = 88;
+          const qrX = W - PAD - qrSize;
+          const qrY = H - 56 - qrSize;
+
+          try {
+            const qr = new QRious({
+              value: lastProfile.html_url,
+              size: qrSize - 16,
+              background: "white",
+              backgroundAlpha: 1,
+              foreground: "#0a0a0f",
+              level: "M",
+              padding: 8,
+            });
+
+            // White rounded plate behind the QR for clean contrast + scan reliability
+            roundRectPath(ctx, qrX, qrY, qrSize, qrSize, 12);
+            ctx.fillStyle = "#ffffff";
+            ctx.fill();
+            ctx.drawImage(
+              qr.canvas,
+              qrX + (qrSize - qr.canvas.width) / 2,
+              qrY + (qrSize - qr.canvas.height) / 2,
+            );
+            qrDrawn = true;
+          } catch (e) {
+            // QR generation failed for some reason — skip silently, card
+            // still works fine without it.
+          }
+        }
+
+        // Footer branding — sits to the left of the QR plate so nothing overlaps
+        const footerRightEdge = qrDrawn ? W - PAD - 88 - 20 : W - PAD;
+
+        ctx.font = "500 16px 'JetBrains Mono', monospace";
+        ctx.fillStyle = theme.textOnDark + "88";
+        ctx.textAlign = "left";
+        ctx.fillText("Generated with SkillMatch", PAD, H - 40);
+
+        ctx.textAlign = "right";
+        ctx.fillStyle = theme.accent;
+        ctx.font = "700 16px 'JetBrains Mono', monospace";
+        // ctx.fillText("skillmatch.dev", footerRightEdge, H - 40);
+
+        if (qrDrawn) {
+          ctx.font = "500 11px 'JetBrains Mono', monospace";
+          ctx.fillStyle = theme.textOnDark + "77";
+          ctx.textAlign = "center";
+          ctx.fillText("scan ↗", W - PAD - 44, H - 56 - 88 - 14);
+          ctx.textAlign = "left";
+        }
+      }
+
+      const cardThemeOptions = document.getElementById("cardThemeOptions");
+      cardThemeOptions.querySelectorAll(".card-theme-swatch").forEach((sw) => {
+        sw.addEventListener("click", () => {
+          cardThemeOptions
+            .querySelectorAll(".card-theme-swatch")
+            .forEach((s) => s.classList.remove("active"));
+          sw.classList.add("active");
+          activeCardTheme = sw.dataset.theme;
+          drawPortfolioCard();
+        });
+      });
+
+      document
+        .getElementById("downloadCardBtn")
+        .addEventListener("click", () => {
+          const canvas = document.getElementById("portfolioCanvas");
+          try {
+            const link = document.createElement("a");
+            const filename =
+              lastProfile ?
+                `${lastProfile.login}-skillmatch-card.png`
+              : "skillmatch-card.png";
+            link.download = filename;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+          } catch (e) {
+            // Avatar image tainted the canvas (CORS) — redraw without the
+            // avatar image so the export still works.
+            const wasImg = lastProfile?.avatar_url;
+            if (wasImg) lastProfile = { ...lastProfile, avatar_url: "" };
+            drawPortfolioCard().then(() => {
+              const link = document.createElement("a");
+              link.download = "skillmatch-card.png";
+              link.href = canvas.toDataURL("image/png");
+              link.click();
+              if (wasImg) lastProfile.avatar_url = wasImg;
+            });
+          }
+        });
+
+      /* ---------- Visit counter (countapi.mileshilliard.com, no signup) ---------- */
+
+      (async function trackVisit() {
+        const COUNTER_KEY = "skillmatch_reehan_mp_visits";
+        const countEl = document.getElementById("visitCount");
+        try {
+          const res = await fetch(
+            `https://countapi.mileshilliard.com/api/v1/hit/${COUNTER_KEY}`,
+          );
+          if (!res.ok) throw new Error("counter request failed");
+          const data = await res.json();
+          countEl.textContent = Number(data.value).toLocaleString();
+        } catch (e) {
+          // Fail silently — counter is a nice-to-have, never block the page on it
+          document.getElementById("visitCounter")?.classList.add("hidden");
+        }
+      })();
+    </script>
+  </body>
+</html>
 
